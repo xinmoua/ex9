@@ -1,6 +1,13 @@
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Scanner;
 
 public class HandleOrders {
+    private List<CustomPizza> customPizzas = new ArrayList<>();
+    private Queue<String> orderLogs = new LinkedList<>();
 
     private static final double PIZZA_BASE_PRICE = 10.0;
 
@@ -8,6 +15,7 @@ public class HandleOrders {
     private String[] pizzaSizesOrdered = new String[10];
     private String[] sideDishesOrdered = new String[20];
     private String[] drinksOrdered = new String[20];
+
     private double totalOrderPrice = 0.0;
     private int numberOfPizzasOrdered = 0;
     StringBuilder pizzaOrderSummary = new StringBuilder();
@@ -78,7 +86,8 @@ public class HandleOrders {
                 }
             } else if (choice == 6){
                 double customPizzaPrice = 0;
-                
+                StringBuilder customPizzaToppings = new StringBuilder();
+
                 System.out.println("For your custom pizza, here are the toppings:");
                 int k = 1;
                 for(PizzaToppings topping : PizzaToppings.values()){
@@ -97,13 +106,17 @@ public class HandleOrders {
                     if(toppingChoice == 0){
                         break;
                     }
+                    customPizzaToppings.append(PizzaToppings.values()[toppingChoice-1].getTopping() + ",");
                     customPizza.append(PizzaToppings.values()[toppingChoice-1].getTopping() + ", ");
                     customPizzaPrice += PizzaToppings.values()[toppingChoice-1].getToppingPrice();
                     l++;
                 }while(l!=10 || l!=0);
                 
                 customPizzaPrice += PIZZA_BASE_PRICE;
+
                 
+                customPizzas.add(new CustomPizza(customPizzaToppings.toString(), customPizzaPrice));
+
                 customPizza.append(": €" + customPizzaPrice);
 
                 pizzasOrdered[j] = customPizza.toString();
@@ -173,15 +186,100 @@ public class HandleOrders {
         pizzaOrderSummary.append("\nThank you for dining with Slice-o-Heaven. Your order details are as follows: \n");
 
         for(int i=0; i<numberOfPizzasOrdered; i++){
+
             pizzaOrderSummary.append((i+1) + pizzasOrdered[i] + "\n");
             pizzaOrderSummary.append(pizzaSizesOrdered[i] + "\n");
             pizzaOrderSummary.append(sideDishesOrdered[i] + "\n");
             pizzaOrderSummary.append(drinksOrdered[i] + "\n \n");
-            
+            addOrderLog((i+1)+pizzasOrdered[i] + "\n" +pizzaSizesOrdered[i] + "\n" + sideDishesOrdered[i] + "\n" +drinksOrdered[i] + "\n \n");
         }
 
         pizzaOrderSummary.append("ORDER TOTAL: €" + totalOrderPrice + "\n");
 
+    }
+    public void displayCustomPizzas(){
+        for(CustomPizza string : customPizzas){
+            System.out.println(string.toString());
+        }
+    }
+
+
+    
+    
+    public void addOrderLog(String log){
+        orderLogs.add(log);
+    }
+    private void mostRecentLogEntry(){
+        System.out.println(orderLogs.element());
+    }
+    private String getOrderLog(){
+        return orderLogs.remove();
+    }
+    private void removeAllLogEntries(){
+        orderLogs.clear();
+    }
+    private boolean orderLogsEmpty(){
+        return orderLogs.isEmpty();
+    }
+    private void  displayOrderLogs(){
+        for(String string : orderLogs){
+            System.out.println(string);
+        }
+    }
+    public void handleLogs(){
+        int a = 0;
+        do{
+        System.out.println("Choose what you want to do with order logs:\n" + 
+                    "1. Display all the logs\n" + 
+                    "2. Display the most recent logs\n" + 
+                    "3. Remove a log entry\n" + 
+                    "4. Remove all log entries\n" + 
+                    "5. Check if the log is completely empty\n" +
+                    "Enter your choice (1 - 5)");
+
+        int choice = input.nextInt();
+        input.nextLine();
+        if(choice>0 && choice<6){
+            switch(choice){
+                case 1:
+                displayOrderLogs();
+                break;
+                case 2:
+                if(orderLogsEmpty()){
+                    System.out.println("The log is completely empty");
+                }else{
+                    mostRecentLogEntry();
+                }
+                break;
+                case 3:
+                if(orderLogsEmpty()){
+                    System.out.println("The log is completely empty");
+                }else{
+                    getOrderLog();
+                }
+                break;
+                case 4:
+                removeAllLogEntries();
+                break;
+                case 5:
+                if(orderLogsEmpty()){
+                    System.out.println("The log is completely empty");
+                }else{
+                    System.out.println("The log is not completely empty");
+                }
+                break;
+                default:
+                System.out.println("Incorrect choice. Please try again.");
+                break;
+            }
+        }
+        System.out.println("Whether to proceed?(Y/N)");
+        String string = input.nextLine();
+        if(string.equals("y") || string.equals("Y")){
+        }else{
+            a = 1;
+        }
+        }while(a == 0);
     }
 
     @Override
